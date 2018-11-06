@@ -1,0 +1,1 @@
+Pasta do Projeto da disciplina de Redes Neurais 2018.2 do Grupo: Diogo, Hugo,Lucas, Sheyla
