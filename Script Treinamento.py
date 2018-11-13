@@ -7,18 +7,38 @@ Created on Tue Nov  6 12:51:36 2018
 Script de Treinamento da Rede, inicialmente com uma Rede Neural
 """
 import pandas as pd
-#import numpy as np
 from sklearn.cross_validation import train_test_split
 
 #Leitura dos dados de Treinamento
-data_set = pd.read_csv('treinamento.csv')
+treinamento = pd.read_csv('treinamento.csv')
+teste = pd.read_csv('teste.csv')
+validacao = pd.read_csv('validacao.csv')
 
-##Aqui já estão só os dados do conjunto de Treinamento
-previsores = data_set_c1.iloc[:,1:-2].values
-classe = data_set_c1.iloc[:,-1].values
+'''
+X_train --> Atributos de treinamento 
+Y_train --> Classes referentes aos atributos de treinamento
 
+X_validacao --> Atributos de treinamento
+Y_validacao --> Classes referentes aos atributos de validação
+
+X_teste --> Atributos de teste
+Y_teste --> Classes referentes aos atributos de teste
+'''
+
+#Aqui já estão só os dados do conjunto de Treinamento
+X_train = treinamento.iloc[:,1:-2].values
+Y_train = treinamento.iloc[:,-1].values
+#Aqui já estão só os dados do conjunto de Validação
+X_validacao = validacao.iloc[:,1:-2].values
+Y_validacao = validacao.iloc[:,-1].values
+#Aqui já estão só os dados do conjunto de Teste
+X_teste = teste.iloc[:,1:-2].values
+Y_teste = teste.iloc[:,-1].values
+
+
+from keras.models import Sequential
 # Número de features do nosso data set.
-input_dim = previsores.shape[1]
+input_dim = X_train.shape[1]
 
 # Aqui criamos o esboço da rede.
 classifier = Sequential()
