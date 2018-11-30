@@ -27,21 +27,58 @@ import scikitplot as skplt
 import matplotlib
 import matplotlib.pyplot as plt
 
-data_set = pd.read_table('data/TRN')
-data_set.drop_duplicates(inplace=True)  # Remove exemplos repetidos
+data_set = pd.read_table('TRN')
+#data_set.drop_duplicates(inplace=True)  # Remove exemplos repetidos
 
 # Também convertemos os dados para arrays ao invés de DataFrames
-X = data_set.iloc[:,1:-2].values
-y = data_set.iloc[:,-2:-1].values
+X = data_set.iloc[:,1:-2]
+y = data_set.iloc[:,-2:-1]
+
 
 ## Treino: 50%, Validação: 25%, Teste: 25%
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1/4, random_state=42, stratify=y)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=1/3, random_state=42, stratify=y_train)
 
+
+X_train = pd.concat((X_train,y_train),axis=1) #concatena a coluna a direita
+X_train_c0 = X_train.loc[X_train.IND_BOM_1_1 == 0]
+X_train_c1 = X_train.loc[X_train.IND_BOM_1_1 == 1]
+
+#Sampling no Conjunto de Treinamento de C2
+c0_train = X_train_c0.sample(n = X_train_c1.IND_BOM_1_1.count(),random_state = 1,replace = True)
+#Previsores Classe 1 + Previsores Classe 2
+X_train = X_train_c1.append(c0_train).reset_index(drop=True)
+#Embaralhando os registros
+X_train = X_train.sample(frac=1).reset_index(drop=True)
+
+#Separando em Previsores e Classes
+y_train = X_train.iloc[:,-1].values
+X_train = X_train.iloc[:,0:-1].values
+
+
+
+#VALIDAÇÃO
+X_val = pd.concat((X_val,y_val),axis=1) #concatena a coluna a direita
+X_val_c0 = X_val.loc[X_val.IND_BOM_1_1 == 0]
+X_val_c1 = X_val.loc[X_val.IND_BOM_1_1 == 1]
+
+#Sampling no Conjunto de Treinamento de C2
+c0_val = X_val_c0.sample(n = X_val_c1.IND_BOM_1_1.count(),random_state = 1,replace = True)
+#Previsores Classe 1 + Previsores Classe 2
+X_val = X_val_c1.append(c0_val).reset_index(drop=True)
+#Embaralhando os registros
+X_val = X_val.sample(frac=1).reset_index(drop=True)
+
+#Separando em Previsores e Classes
+y_val = X_val.iloc[:,-1].values
+X_val = X_val.iloc[:,0:-1].values
+
+
+#Escalonamento
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_val = scaler.transform(X_val)
-X_test = scaler.transform(X_test)
+X_test = scaler.transform(X_test.values)
 
 #----------------------------------------------------------------------------#
 
